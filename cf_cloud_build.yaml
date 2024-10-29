@@ -1,0 +1,17 @@
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - 
+      - --runtime=
+        
+      - --region=
+      - --entry-point=
+      - --source=
+      - --memory=
+      - --timeout=
+      - --project=
+
+timeout: '600s'
