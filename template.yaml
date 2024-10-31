@@ -1,0 +1,32 @@
+service: deployCF
+
+provider:
+  name: aws
+  runtime: qwertyuio
+  region: us-central-1 # Specify the AWS region
+
+functions:
+  deployCF:
+    handler: src/app.testHandler
+    memorySize: 128
+    timeout: 30
+    environment:
+      ENV_1=env1
+      ENV_2=env2
+    events:
+      - http:
+          path: /hello
+          method: GET
+      - sns:
+          arn: aws::s3::qwertyu
+      - s3:
+          bucket: aws::s3::bucketname
+          events:
+            - s3:ObjectCreated:*
+
+resources:
+  Resources:
+    MyBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: Bucket packing

@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Installing dependencies"
+      - pip install aws-sam-cli
+  build:
+    commands:
+      - echo "Building application with SAM"
+      - sam build
+  post_build:
+    commands:
+      - echo "Packaging application with SAM"
+      - sam package --s3-bucket Bucket packing --output-template-file packaged.yaml
+      - echo "Deploying application with SAM"
+      - sam deploy --template-file packaged.yaml --stack-name deployCF --capabilities CAPABILITY_IAM
+
+artifacts:
+  files:
+    - packaged.yaml
