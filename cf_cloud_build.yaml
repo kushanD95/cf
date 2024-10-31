@@ -1,0 +1,22 @@
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: Deploy
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+          gcloud functions deploy deployCF \
+          --runtime=go116 \
+          --region=us-central1 \
+          --entry-point=DeployCF \
+          --source=. \
+          --memory=256MB \
+          --timeout=60s \
+          --project=test-prj \
+          --trigger-http \
+          --topic=abc \
+          --bucket= \
+          --set-env-vars env12=env12V,env22=env22V \
+          --set-secrets sec1=sec1,sec2=sec2
+
+    timeout: '600s'
