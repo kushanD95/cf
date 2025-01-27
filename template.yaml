@@ -1,51 +1,13 @@
 stages:
-  - test
+  - build
 
-include:
-  - template: Security/SAST.gitlab-ci.yml
-
-gitleaks:
-  stage: test
-  tags:
-    - docker
-    - ec2
-  image:
-    name: zricethezav/gitleaks
-    entrypoint: [""]
-  script:
-    - gitleaks detect --verbose --source . -f json -r gitleaks.json
-  allow_failure: true
-  artifacts:
-    when: always
-    paths:
-      - gitleaks.json
-
-semgrep:
-  stage: test
-  tags:
-    - docker
-    - ec2
-  image: returntocorp/semgrep
-  variables:
-    SEMGREP_RULES: p/javascript
-  script:
-    - semgrep ci --json --output semgrep.json
-  allow_failure: true
-  artifacts:
-    when: always
-    paths:
-      - semgrep.json
-
-upload_reports:
-  stage: test
-  tags:
-    - docker
-    - ec2
-  image: bash
-  needs: ["gitleaks", "semgrep"]
-  when: always
-  before_script:
-    - chmod +x upload-reports.sh
-  script:
-    - ./upload-reports.sh gitleaks.json "$DOJO_HOST" "$DOJO_AUTH_TOKEN"
-    - ./upload-reports.sh semgrep.json "$DOJO_HOST" "$DOJO_AUTH_TOKEN"
+build_image:
+    stage: build
+    tags:
+      - shell
+      - ec2
+    before_script:
+        - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    script:
+        - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        - docker push $IMAGE_NAME:$IMAGE_TAG
